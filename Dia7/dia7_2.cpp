@@ -7,7 +7,7 @@
 
 using namespace std;
 
-// Función para evaluar si el objetivo es alcanzable con combinaciones de + y *
+// Función para evaluar si el objetivo es alcanzable con combinaciones de +, *, y ||
 bool canAchieveTarget(long long target, const vector<int>& nums, int index, long long currentValue) {
     if (index == nums.size()) {
         return currentValue == target;
@@ -18,6 +18,11 @@ bool canAchieveTarget(long long target, const vector<int>& nums, int index, long
     }
     // Opción 2: multiplicar por el siguiente número
     if (canAchieveTarget(target, nums, index + 1, currentValue * nums[index])) {
+        return true;
+    }
+    // Opción 3: concatenar el siguiente número
+    long long concatenatedValue = stoll(to_string(currentValue) + to_string(nums[index]));
+    if (canAchieveTarget(target, nums, index + 1, concatenatedValue)) {
         return true;
     }
     return false;
