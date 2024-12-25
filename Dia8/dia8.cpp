@@ -2,14 +2,14 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <set>
+#include <unordered_set> // LibrerÃ­a HashTable (apuntes pÃ¡g 18)
 #include <cmath>
 #include <algorithm>
 
 using namespace std;
 
 // Estructura para representar una antena
-struct Antenna {
+struct Antena {
     int x, y;
     char frequency;
 };
@@ -24,8 +24,9 @@ bool areCollinear(int x1, int y1, int x2, int y2, int x3, int y3) {
     return (long long)(y2 - y1) * (x3 - x2) == (long long)(y3 - y2) * (x2 - x1);
 }
 
+// FunciÃ³n optimizada para encontrar antinodos utilizando tablas hash
 int findAntiNodes(const vector<vector<char>>& grid) {
-    vector<Antenna> antennas;
+    vector<Antena> antenas;
     int rows = grid.size();
     int cols = grid[0].size();
 
@@ -33,57 +34,45 @@ int findAntiNodes(const vector<vector<char>>& grid) {
     for (int y = 0; y < rows; ++y) {
         for (int x = 0; x < cols; ++x) {
             if (isalnum(grid[y][x])) {
-                antennas.push_back({x, y, grid[y][x]});
+                antenas.push_back({x, y, grid[y][x]});
             }
         }
     }
 
-    // Conjunto para almacenar ubicaciones únicas de antinodos
-    set<pair<int, int>> antiNodes;
+    // Tabla hash para almacenar ubicaciones Ãºnicas de antinodos
+    unordered_set<string> antiNodes;
 
     // Verificar todos los pares de antenas
-    for (size_t i = 0; i < antennas.size(); ++i) {
-        for (size_t j = i + 1; j < antennas.size(); ++j) {
-            // Solo considerar antenas con la misma frecuencia
-            if (antennas[i].frequency == antennas[j].frequency) {
-                int dx = antennas[j].x - antennas[i].x;
-                int dy = antennas[j].y - antennas[i].y;
-                
+    for (size_t i = 0; i < antenas.size(); ++i) {
+        for (size_t j = i + 1; j < antenas.size(); ++j) {
+            if (antenas[i].frequency == antenas[j].frequency) {
+                int dx = antenas[j].x - antenas[i].x;
+                int dy = antenas[j].y - antenas[i].y;
+
                 // Calcular posibles ubicaciones de antinodos
                 vector<pair<int, int>> potentialAntiNodes = {
-                    {antennas[i].x - dx, antennas[i].y - dy},
-                    {antennas[j].x + dx, antennas[j].y + dy}
+                    {antenas[i].x - dx, antenas[i].y - dy},
+                    {antenas[j].x + dx, antenas[j].y + dy}
                 };
 
                 for (const auto& antiNode : potentialAntiNodes) {
                     int ax = antiNode.first;
                     int ay = antiNode.second;
 
-                    // Verificar si el antinodo está dentro de los límites de la cuadrícula
+                    // Verificar si el antinodo estÃ¡ dentro de los lÃ­mites de la cuadrÃ­cula
                     if (ax >= 0 && ax < cols && ay >= 0 && ay < rows) {
-                        // Verificar si el antinodo está en línea y a la distancia correcta
-                        if (areCollinear(antennas[i].x, antennas[i].y, 
-                                         ax, ay, 
-                                         antennas[j].x, antennas[j].y)) {
-                            int dist1 = manhattanDistance(antennas[i].x, antennas[i].y, ax, ay);
-                            int dist2 = manhattanDistance(ax, ay, antennas[j].x, antennas[j].y);
-                            
+                        // Verificar si el antinodo estÃ¡ en lÃ­nea y a la distancia correcta
+                        if (areCollinear(antenas[i].x, antenas[i].y, ax, ay, antenas[j].x, antenas[j].y)) {
+                            int dist1 = manhattanDistance(antenas[i].x, antenas[i].y, ax, ay);
+                            int dist2 = manhattanDistance(ax, ay, antenas[j].x, antenas[j].y);
+
                             // Verificar que la distancia sea el doble
                             if (abs(dist1 - dist2 * 2) < 1e-9 || abs(dist2 - dist1 * 2) < 1e-9) {
-                                antiNodes.insert({ax, ay});
+                                antiNodes.insert(to_string(ax) + "," + to_string(ay));
                             }
                         }
                     }
                 }
-            }
-        }
-    }
-
-    // Añadir ubicaciones de antenas con antinodos
-    for (const auto& antenna : antennas) {
-        for (const auto& antiNode : antiNodes) {
-            if (antiNode.first == antenna.x && antiNode.second == antenna.y) {
-                antiNodes.insert({antenna.x, antenna.y});
             }
         }
     }
@@ -105,7 +94,7 @@ int main() {
     }
 
     int result = findAntiNodes(grid);
-    cout << "Número de ubicaciones únicas de antinodos: " << result << endl;
+    cout << "NÃºmero de ubicaciones Ãºnicas de antinodos: " << result << endl;
 
     return 0;
 }

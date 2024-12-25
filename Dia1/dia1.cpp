@@ -6,7 +6,6 @@ ______________________________________________________________________
 MIEMBROS: Nuria Urrecho Torres, Iván Rejas Cuevas y Rubén Pérez Gracia
 
 */
-
 #include <iostream>
 #include <fstream>
 #include <string>
