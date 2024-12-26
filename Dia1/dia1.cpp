@@ -1,67 +1,75 @@
-/*
-ADVENT OF CODE (DÍA 1) 
-Suma de la diferencia numérica entre dos listas
-______________________________________________________________________
-
-MIEMBROS: Nuria Urrecho Torres, Iván Rejas Cuevas y Rubén Pérez Gracia
-
-*/
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <sstream>
-#include <vector>
-#include <cmath> // Para abs
 using namespace std;
 
-// Función para cargar datos desde el archivo
-void load(vector<int> &v1, vector<int> &v2) {
-    ifstream file("input.txt");
-    string line, data;
-    while (getline(file, line)) {
-        stringstream iss(line);
-        // Convertir string a int usando stringstream    
-        iss >> data;
-        v1.push_back(stoi(data));
-        iss >> data;
-        v2.push_back(stoi(data));
+void cargar(int*& arreglo1, int*& arreglo2, int& tamano) {
+    ifstream archivo("input.txt");
+    if (!archivo.is_open()) {
+        cerr << "No se pudo abrir el archivo." << endl;
+        exit(1);
     }
+
+    tamano = 0;
+    string linea;
+
+    while (getline(archivo, linea)) {
+        tamano++;
+    }
+
+    archivo.clear();
+    archivo.seekg(0, ios::beg);
+
+    arreglo1 = new int[tamano];
+    arreglo2 = new int[tamano];
+
+    int indice = 0;
+    while (getline(archivo, linea)) {
+        int valor1, valor2;
+        sscanf(linea.c_str(), "%d %d", &valor1, &valor2);
+        arreglo1[indice] = valor1;
+        arreglo2[indice] = valor2;
+        indice++;
+    }
+
+    archivo.close();
 }
 
-// Implementación del SelectionSort
-void selectionSort(vector<int> &arr) {
-    int n = arr.size();
-    for (int i = 0; i < n - 1; i++) {
-        int minId = i;
-        for (int j = i + 1; j < n; j++) {
-            if (arr[j] < arr[minId]) {
-                minId = j;
+void selectionsort(int* arreglo, int tamano) {
+    for (int i = 0; i < tamano - 1; i++) {
+        int minimo = i;
+        for (int j = i + 1; j < tamano; j++) {
+            if (arreglo[j] < arreglo[minimo]) {
+                minimo = j;
             }
         }
-        // Intercambiar el elemento actual con el menor
-        swap(arr[i], arr[minId]);
+        int temporal = arreglo[i];
+        arreglo[i] = arreglo[minimo];
+        arreglo[minimo] = temporal;
     }
 }
 
 int main() {
-    vector<int> v1, v2;
+    int* arreglo1 = nullptr;
+    int* arreglo2 = nullptr;
+    int tamano = 0;
 
-    // Leer el archivo línea por línea y almacenarlo en dos vectores
-    load(v1, v2);
+    cargar(arreglo1, arreglo2, tamano);
 
-    // Ordenar los vectores utilizando nuestra función de ordenamiento
-    selectionSort(v1);
-    selectionSort(v2);
+    selectionsort(arreglo1, tamano);
+    selectionsort(arreglo2, tamano);
 
-    // Calcular la suma de las diferencias
-    int sum = 0;
-    for (int i = 0; i < v1.size(); i++) {
-        cout << v1[i] << " " << v2[i] << " " << abs(v1[i] - v2[i]) << endl;
-        sum += abs(v2[i] - v1[i]);
+    int suma = 0;
+    for (int i = 0; i < tamano; i++) {
+        int diferencia = (arreglo1[i] > arreglo2[i]) ? (arreglo1[i] - arreglo2[i]) : (arreglo2[i] - arreglo1[i]);
+        suma += diferencia;
     }
 
-    // Imprimir la suma total
-    cout << "Suma total de diferencias: " << sum << endl;
+    cout << suma << endl;
+
+    delete[] arreglo1;
+    delete[] arreglo2;
+
     return 0;
 }
 

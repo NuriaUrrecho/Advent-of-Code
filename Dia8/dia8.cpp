@@ -1,74 +1,56 @@
 #include <iostream>
 #include <fstream>
-#include <vector>
 #include <string>
-#include <unordered_set> // LibrerÃ­a HashTable (apuntes pÃ¡g 18)
-#include <cmath>
-#include <algorithm>
-
+#include <unordered_set> //Apuntes p.18 (Tabla Hash)
 using namespace std;
 
-// Estructura para representar una antena
 struct Antena {
     int x, y;
-    char frequency;
+    char frecuencia;
 };
 
-// Calcular distancia de Manhattan
-int manhattanDistance(int x1, int y1, int x2, int y2) {
+int distanciaManhattan(int x1, int y1, int x2, int y2) {
     return abs(x1 - x2) + abs(y1 - y2);
 }
 
-// Verificar si tres puntos son colineales
-bool areCollinear(int x1, int y1, int x2, int y2, int x3, int y3) {
+bool sonColineales(int x1, int y1, int x2, int y2, int x3, int y3) {
     return (long long)(y2 - y1) * (x3 - x2) == (long long)(y3 - y2) * (x2 - x1);
 }
 
-// FunciÃ³n optimizada para encontrar antinodos utilizando tablas hash
-int findAntiNodes(const vector<vector<char>>& grid) {
-    vector<Antena> antenas;
-    int rows = grid.size();
-    int cols = grid[0].size();
+int encontrarAntinodos(string* cuadrilla, int filas, int columnas) {
+    Antena* antenas = new Antena[filas * columnas];
+    int cantidadAntenas = 0;
 
-    // Recolectar todas las antenas
-    for (int y = 0; y < rows; ++y) {
-        for (int x = 0; x < cols; ++x) {
-            if (isalnum(grid[y][x])) {
-                antenas.push_back({x, y, grid[y][x]});
+    for (int y = 0; y < filas; ++y) {
+        for (int x = 0; x < columnas; ++x) {
+            if (isalnum(cuadrilla[y][x])) {
+                antenas[cantidadAntenas++] = {x, y, cuadrilla[y][x]};
             }
         }
     }
 
-    // Tabla hash para almacenar ubicaciones Ãºnicas de antinodos
-    unordered_set<string> antiNodes;
+    unordered_set<string> antinodos;
 
-    // Verificar todos los pares de antenas
-    for (size_t i = 0; i < antenas.size(); ++i) {
-        for (size_t j = i + 1; j < antenas.size(); ++j) {
-            if (antenas[i].frequency == antenas[j].frequency) {
+    for (int i = 0; i < cantidadAntenas; ++i) {
+        for (int j = i + 1; j < cantidadAntenas; ++j) {
+            if (antenas[i].frecuencia == antenas[j].frecuencia) {
                 int dx = antenas[j].x - antenas[i].x;
                 int dy = antenas[j].y - antenas[i].y;
 
-                // Calcular posibles ubicaciones de antinodos
-                vector<pair<int, int>> potentialAntiNodes = {
-                    {antenas[i].x - dx, antenas[i].y - dy},
-                    {antenas[j].x + dx, antenas[j].y + dy}
-                };
+                int posiblesX[] = {antenas[i].x - dx, antenas[j].x + dx};
+                int posiblesY[] = {antenas[i].y - dy, antenas[j].y + dy};
 
-                for (const auto& antiNode : potentialAntiNodes) {
-                    int ax = antiNode.first;
-                    int ay = antiNode.second;
+                for (int k = 0; k < 2; ++k) {
+                    int ax = posiblesX[k];
+                    int ay = posiblesY[k];
 
-                    // Verificar si el antinodo estÃ¡ dentro de los lÃ­mites de la cuadrÃ­cula
-                    if (ax >= 0 && ax < cols && ay >= 0 && ay < rows) {
-                        // Verificar si el antinodo estÃ¡ en lÃ­nea y a la distancia correcta
-                        if (areCollinear(antenas[i].x, antenas[i].y, ax, ay, antenas[j].x, antenas[j].y)) {
-                            int dist1 = manhattanDistance(antenas[i].x, antenas[i].y, ax, ay);
-                            int dist2 = manhattanDistance(ax, ay, antenas[j].x, antenas[j].y);
+                    if (ax >= 0 && ax < columnas && ay >= 0 && ay < filas) {
+                        if (sonColineales(antenas[i].x, antenas[i].y, ax, ay, antenas[j].x, antenas[j].y)) {
+                            int dist1 = distanciaManhattan(antenas[i].x, antenas[i].y, ax, ay);
+                            int dist2 = distanciaManhattan(ax, ay, antenas[j].x, antenas[j].y);
 
-                            // Verificar que la distancia sea el doble
                             if (abs(dist1 - dist2 * 2) < 1e-9 || abs(dist2 - dist1 * 2) < 1e-9) {
-                                antiNodes.insert(to_string(ax) + "," + to_string(ay));
+                                antinodos.insert(to_string(ax) + "," + to_string(ay));
                             }
                         }
                     }
@@ -77,24 +59,29 @@ int findAntiNodes(const vector<vector<char>>& grid) {
         }
     }
 
-    return antiNodes.size();
+    delete[] antenas;
+    return antinodos.size();
 }
 
 int main() {
-    ifstream input("input8.txt");
-    if (!input) {
+    ifstream entrada("input8.txt");
+    if (!entrada) {
         cerr << "No se pudo abrir el archivo de entrada" << endl;
         return 1;
     }
 
-    vector<vector<char>> grid;
-    string line;
-    while (getline(input, line)) {
-        grid.push_back(vector<char>(line.begin(), line.end()));
+    string* cuadrilla = new string[100];
+    int filas = 0;
+    string linea;
+
+    while (getline(entrada, linea)) {
+        cuadrilla[filas++] = linea;
     }
 
-    int result = findAntiNodes(grid);
-    cout << "NÃºmero de ubicaciones Ãºnicas de antinodos: " << result << endl;
+    int columnas = cuadrilla[0].size();
+    int resultado = encontrarAntinodos(cuadrilla, filas, columnas);
+    cout << "Número de ubicaciones únicas de antinodos: " << resultado << endl;
 
+    delete[] cuadrilla;
     return 0;
 }
