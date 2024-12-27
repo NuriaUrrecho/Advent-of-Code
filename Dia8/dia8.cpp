@@ -21,8 +21,8 @@ int encontrarAntinodos(string* cuadrilla, int filas, int columnas) {
     Antena* antenas = new Antena[filas * columnas];
     int cantidadAntenas = 0;
 
-    for (int y = 0; y < filas; ++y) {
-        for (int x = 0; x < columnas; ++x) {
+    for (int y = 0; y < filas; y++) {
+        for (int x = 0; x < columnas; x++) {
             if (isalnum(cuadrilla[y][x])) {
                 antenas[cantidadAntenas++] = {x, y, cuadrilla[y][x]};
             }
@@ -31,8 +31,8 @@ int encontrarAntinodos(string* cuadrilla, int filas, int columnas) {
 
     unordered_set<string> antinodos;
 
-    for (int i = 0; i < cantidadAntenas; ++i) {
-        for (int j = i + 1; j < cantidadAntenas; ++j) {
+    for (int i = 0; i < cantidadAntenas; i++) {
+        for (int j = i + 1; j < cantidadAntenas; j++) {
             if (antenas[i].frecuencia == antenas[j].frecuencia) {
                 int dx = antenas[j].x - antenas[i].x;
                 int dy = antenas[j].y - antenas[i].y;
@@ -40,7 +40,7 @@ int encontrarAntinodos(string* cuadrilla, int filas, int columnas) {
                 int posiblesX[] = {antenas[i].x - dx, antenas[j].x + dx};
                 int posiblesY[] = {antenas[i].y - dy, antenas[j].y + dy};
 
-                for (int k = 0; k < 2; ++k) {
+                for (int k = 0; k < 2; k++) {
                     int ax = posiblesX[k];
                     int ay = posiblesY[k];
 
@@ -65,10 +65,6 @@ int encontrarAntinodos(string* cuadrilla, int filas, int columnas) {
 
 int main() {
     ifstream entrada("input8.txt");
-    if (!entrada) {
-        cerr << "No se pudo abrir el archivo de entrada" << endl;
-        return 1;
-    }
 
     string* cuadrilla = new string[100];
     int filas = 0;
