@@ -1,23 +1,48 @@
+/*
+ADVENT OF CODE (DÍA 1 REWORK)
+Suma de la diferencia numérica entre dos listas sin usar funciones adicionales para cargar datos
+______________________________________________________________________
+
+MIEMBROS: Nuria Urrecho Torres, Iván Rejas Cuevas y Rubén Pérez Gracia
+*/
+
 #include <iostream>
 #include <fstream>
 #include <string>
 using namespace std;
 
-void cargar(int*& arreglo1, int*& arreglo2, int& tamano) {
-    ifstream archivo("input.txt");
+// Implementación del InsertionSort
+void insertionSort(int* arreglo, int tamano) {
+    for (int i = 1; i < tamano; i++) { // Recorrer desde el segundo elemento hasta el final
+        int actual = arreglo[i]; // Guardar el valor actual
+        int j = i - 1;  // Inicializar el índice para comparar
 
-    tamano = 0;
+        // Mover los elementos mayores que v hacia adelante
+        while (j >= 0 && arreglo[j] > actual) {
+            arreglo[j + 1] = arreglo[j];
+            j--;
+        }
+
+        // Insertar el valor actual en la posición correcta
+        arreglo[j + 1] = actual;
+    }
+}
+
+int main() {
+    ifstream archivo("input.txt");
     string linea;
+
+    int tamano = 0;
 
     while (getline(archivo, linea)) {
         tamano++;
     }
 
-    archivo.clear();
-    archivo.seekg(0, ios::beg);
+    archivo.close();
+    archivo.open("input.txt");
 
-    arreglo1 = new int[tamano];
-    arreglo2 = new int[tamano];
+    int* arreglo1 = new int[tamano];
+    int* arreglo2 = new int[tamano];
 
     int indice = 0;
     while (getline(archivo, linea)) {
@@ -29,35 +54,18 @@ void cargar(int*& arreglo1, int*& arreglo2, int& tamano) {
     }
 
     archivo.close();
-}
 
-void selectionsort(int* arreglo, int tamano) {
-    for (int i = 0; i < tamano - 1; i++) {
-        int minimo = i;
-        for (int j = i + 1; j < tamano; j++) {
-            if (arreglo[j] < arreglo[minimo]) {
-                minimo = j;
-            }
-        }
-        int temporal = arreglo[i];
-        arreglo[i] = arreglo[minimo];
-        arreglo[minimo] = temporal;
-    }
-}
-
-int main() {
-    int* arreglo1 = nullptr;
-    int* arreglo2 = nullptr;
-    int tamano = 0;
-
-    cargar(arreglo1, arreglo2, tamano);
-
-    selectionsort(arreglo1, tamano);
-    selectionsort(arreglo2, tamano);
+    insertionSort(arreglo1, tamano);
+    insertionSort(arreglo2, tamano);
 
     int suma = 0;
     for (int i = 0; i < tamano; i++) {
-        int diferencia = (arreglo1[i] > arreglo2[i]) ? (arreglo1[i] - arreglo2[i]) : (arreglo2[i] - arreglo1[i]);
+        int diferencia;
+        if (arreglo1[i] > arreglo2[i]) {
+            diferencia = arreglo1[i] - arreglo2[i];
+        } else {
+            diferencia = arreglo2[i] - arreglo1[i];
+        }
         suma += diferencia;
     }
 
@@ -68,4 +76,3 @@ int main() {
 
     return 0;
 }
-
