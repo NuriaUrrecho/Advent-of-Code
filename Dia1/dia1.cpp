@@ -5,10 +5,6 @@ using namespace std;
 
 void cargar(int*& arreglo1, int*& arreglo2, int& tamano) {
     ifstream archivo("input.txt");
-    if (!archivo.is_open()) {
-        cerr << "No se pudo abrir el archivo." << endl;
-        exit(1);
-    }
 
     tamano = 0;
     string linea;
