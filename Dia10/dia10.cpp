@@ -35,7 +35,7 @@ int calcularSenderosDesdeNodo(int inicioX, int inicioY, int filas, int columnas,
 
         int direcciones[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; i++) {
             int nuevoX = actual.x + direcciones[i][0];
             int nuevoY = actual.y + direcciones[i][1];
 
@@ -53,8 +53,8 @@ int calcularSenderosDesdeNodo(int inicioX, int inicioY, int filas, int columnas,
 int calcularPuntajeTotalDeSenderos(int filas, int columnas, int** grafo) {
     int puntajeTotal = 0;
 
-    for (int i = 0; i < filas; ++i) {
-        for (int j = 0; j < columnas; ++j) {
+    for (int i = 0; i < filas; i++) {
+        for (int j = 0; j < columnas; j++) {
             if (grafo[i][j] == 0) {
                 puntajeTotal += calcularSenderosDesdeNodo(i, j, filas, columnas, grafo);
             }
@@ -66,10 +66,6 @@ int calcularPuntajeTotalDeSenderos(int filas, int columnas, int** grafo) {
 
 int main() {
     ifstream archivoEntrada("input10.txt");
-    if (!archivoEntrada) {
-        cerr << "Error: No se pudo abrir el archivo input10.txt" << endl;
-        return 1;
-    }
 
     string linea;
     int filas = 0, columnas = 0;
@@ -98,7 +94,7 @@ int main() {
     int puntajeTotal = calcularPuntajeTotalDeSenderos(filas, columnas, grafo);
     cout << "El puntaje total de los senderos es: " << puntajeTotal << endl;
 
-    for (int i = 0; i < filas; ++i) {
+    for (int i = 0; i < filas; i++) {
         delete[] grafo[i];
     }
     delete[] grafo;
