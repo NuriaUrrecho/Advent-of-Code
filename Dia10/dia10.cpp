@@ -10,9 +10,22 @@ struct Nodo {
 };
 
 bool esMovimientoValido(int x, int y, int alturaAnterior, int filas, int columnas, int** grafo, unordered_set<string>& visitados) {
-    return x >= 0 && x < filas && y >= 0 && y < columnas &&
-           grafo[x][y] == alturaAnterior + 1 &&
-           visitados.find(to_string(x) + "," + to_string(y)) == visitados.end();
+    bool dentroDeLimites = x >= 0 && x < filas && y >= 0 && y < columnas;
+    if (!dentroDeLimites) {
+        return false;
+    }
+
+    bool alturaValida = grafo[x][y] == alturaAnterior + 1;
+    if (!alturaValida) {
+        return false;
+    }
+
+    bool noVisitado = visitados.find(to_string(x) + "," + to_string(y)) == visitados.end();
+    if (!noVisitado) {
+        return false;
+    }
+
+    return true;
 }
 
 int calcularSenderosDesdeNodo(int inicioX, int inicioY, int filas, int columnas, int** grafo) {
