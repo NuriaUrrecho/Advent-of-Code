@@ -74,10 +74,6 @@ void transformarPiedras(string* piedras, int tamano, string*& nuevasPiedras, int
 
 int main() {
     ifstream entrada("input11.txt");
-    if (!entrada) {
-        cerr << "No se pudo abrir el archivo de entrada." << endl;
-        return 1;
-    }
 
     string* piedras = new string[100];
     int tamano = 0;
