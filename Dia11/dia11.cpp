@@ -11,8 +11,19 @@ void dividirNumero(long long numero, string*& nuevasPiedras, int& nuevoTamano, i
     string izquierda = numCadena.substr(0, mitad);
     string derecha = numCadena.substr(mitad);
 
-    long long izq = izquierda.empty() ? 0 : stoll(izquierda);
-    long long der = derecha.empty() ? 0 : stoll(derecha);
+    long long izq;
+    if (izquierda.empty()) {
+        izq = 0;
+    } else {
+        izq = stoll(izquierda);
+    }
+
+    long long der;
+    if (derecha.empty()) {
+        der = 0;
+    } else {
+        der = stoll(derecha);
+    }
 
     if (nuevoTamano + 2 > nuevaCapacidad) {
         nuevaCapacidad *= 2;
