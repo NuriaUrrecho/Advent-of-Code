@@ -4,7 +4,63 @@
 
 using namespace std;
 
-void dividirNumero(long long numero, string*& nuevasPiedras, int& nuevoTamano, int& nuevaCapacidad) {
+struct Resultado {
+    string* valores;
+    int tamano;
+};
+
+struct MemoEntry {
+    long long clave;
+    Resultado resultado;
+};
+
+class Memo {
+private:
+    MemoEntry* entries;
+    int capacidad;
+    int tamano;
+
+    void expandir() {
+        capacidad *= 2;
+        MemoEntry* nuevos = new MemoEntry[capacidad];
+        for (int i = 0; i < tamano; i++) {
+            nuevos[i] = entries[i];
+        }
+        delete[] entries;
+        entries = nuevos;
+    }
+
+public:
+    Memo() : capacidad(100), tamano(0) {
+        entries = new MemoEntry[capacidad];
+    }
+
+    ~Memo() {
+        for (int i = 0; i < tamano; i++) {
+            delete[] entries[i].resultado.valores;
+        }
+        delete[] entries;
+    }
+
+    bool buscar(long long clave, Resultado& resultado) {
+        for (int i = 0; i < tamano; i++) {
+            if (entries[i].clave == clave) {
+                resultado = entries[i].resultado;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void agregar(long long clave, Resultado resultado) {
+        if (tamano >= capacidad) {
+            expandir();
+        }
+        entries[tamano++] = {clave, resultado};
+    }
+};
+
+Resultado dividirNumero(long long numero) {
     string numCadena = to_string(numero);
     int mitad = numCadena.size() / 2;
 
@@ -25,51 +81,69 @@ void dividirNumero(long long numero, string*& nuevasPiedras, int& nuevoTamano, i
         der = stoll(derecha);
     }
 
-    if (nuevoTamano + 2 > nuevaCapacidad) {
-        nuevaCapacidad *= 2;
-        string* temp = new string[nuevaCapacidad];
-        for (int i = 0; i < nuevoTamano; ++i) {
-            temp[i] = nuevasPiedras[i];
-        }
-        delete[] nuevasPiedras;
-        nuevasPiedras = temp;
-    }
+    string* resultado = new string[2];
+    resultado[0] = to_string(izq);
+    resultado[1] = to_string(der);
 
-    nuevasPiedras[nuevoTamano++] = to_string(izq);
-    nuevasPiedras[nuevoTamano++] = to_string(der);
+    return {resultado, 2};
 }
 
-void transformarPiedras(string* piedras, int tamano, string*& nuevasPiedras, int& nuevoTamano, int& nuevaCapacidad) {
-    nuevoTamano = 0;
-    for (int i = 0; i < tamano; ++i) {
-        long long piedra = stoll(piedras[i]);
+Resultado transformarPiedra(long long piedra, Memo& memo) {
+    Resultado resultadoMemo;
+    if (memo.buscar(piedra, resultadoMemo)) {
+        return resultadoMemo;
+    }
 
-        if (piedra == 0) {
-            if (nuevoTamano >= nuevaCapacidad) {
-                nuevaCapacidad *= 2;
-                string* temp = new string[nuevaCapacidad];
-                for (int j = 0; j < nuevoTamano; ++j) {
-                    temp[j] = nuevasPiedras[j];
+    if (piedra == 0) {
+        string* resultado = new string[1]{"1"};
+        memo.agregar(piedra, {resultado, 1});
+        return {resultado, 1};
+    }
+
+    if (to_string(piedra).size() % 2 == 0) {
+        Resultado resultadoDividir = dividirNumero(piedra);
+        memo.agregar(piedra, resultadoDividir);
+        return resultadoDividir;
+    } else {
+        string* resultado = new string[1]{to_string(piedra * 2024)};
+        memo.agregar(piedra, {resultado, 1});
+        return {resultado, 1};
+    }
+}
+
+void transformarRecursivo(string* piedras, int tamano, int parpadeos, string*& resultadoFinal, int& tamanoFinal, Memo& memo) {
+    if (parpadeos == 0) {
+        resultadoFinal = new string[tamano];
+        for (int i = 0; i < tamano; i++) {
+            resultadoFinal[i] = piedras[i];
+        }
+        tamanoFinal = tamano;
+        return;
+    }
+
+    int capacidad = tamano * 2;
+    string* nuevasPiedras = new string[capacidad];
+    int nuevoTamano = 0;
+
+    for (int i = 0; i < tamano; i++) {
+        long long piedra = stoll(piedras[i]);
+        Resultado resultado = transformarPiedra(piedra, memo);
+        for (int j = 0; j < resultado.tamano; j++) {
+            if (nuevoTamano >= capacidad) {
+                capacidad *= 2;
+                string* temp = new string[capacidad];
+                for (int k = 0; k < nuevoTamano; k++) {
+                    temp[k] = nuevasPiedras[k];
                 }
                 delete[] nuevasPiedras;
                 nuevasPiedras = temp;
             }
-            nuevasPiedras[nuevoTamano++] = "1";
-        } else if (to_string(piedra).size() % 2 == 0) {
-            dividirNumero(piedra, nuevasPiedras, nuevoTamano, nuevaCapacidad);
-        } else {
-            if (nuevoTamano >= nuevaCapacidad) {
-                nuevaCapacidad *= 2;
-                string* temp = new string[nuevaCapacidad];
-                for (int j = 0; j < nuevoTamano; ++j) {
-                    temp[j] = nuevasPiedras[j];
-                }
-                delete[] nuevasPiedras;
-                nuevasPiedras = temp;
-            }
-            nuevasPiedras[nuevoTamano++] = to_string(piedra * 2024);
+            nuevasPiedras[nuevoTamano++] = resultado.valores[j];
         }
     }
+
+    transformarRecursivo(nuevasPiedras, nuevoTamano, parpadeos - 1, resultadoFinal, tamanoFinal, memo);
+    delete[] nuevasPiedras;
 }
 
 int main() {
@@ -84,7 +158,7 @@ int main() {
         if (tamano >= capacidad) {
             capacidad *= 2;
             string* temp = new string[capacidad];
-            for (int i = 0; i < tamano; ++i) {
+            for (int i = 0; i < tamano; i++) {
                 temp[i] = piedras[i];
             }
             delete[] piedras;
@@ -96,23 +170,17 @@ int main() {
 
     const int parpadeos = 25;
 
-    for (int i = 0; i < parpadeos; ++i) {
-        int nuevaCapacidad = capacidad;
-        string* nuevasPiedras = new string[nuevaCapacidad];
-        int nuevoTamano = 0;
+    Memo memo;
+    string* resultadoFinal;
+    int tamanoFinal;
 
-        transformarPiedras(piedras, tamano, nuevasPiedras, nuevoTamano, nuevaCapacidad);
+    transformarRecursivo(piedras, tamano, parpadeos, resultadoFinal, tamanoFinal, memo);
 
-        delete[] piedras;
-        piedras = nuevasPiedras;
-        tamano = nuevoTamano;
-        capacidad = nuevaCapacidad;
-    }
+    cout << tamanoFinal << endl;
 
-    cout << tamano << endl;
-
+    delete[] resultadoFinal;
     delete[] piedras;
+
     return 0;
 }
-
 
