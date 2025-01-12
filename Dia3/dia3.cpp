@@ -58,7 +58,7 @@ bool esNumeroValido(const string& str) {
     return true;
 }
 
-void processMulOperations(ifstream& inputFile, Nodo*& arbol) {
+void operacionMul(ifstream& inputFile, Nodo*& arbol) {
     string line;
     while (getline(inputFile, line)) {
         size_t pos = 0;
@@ -96,7 +96,7 @@ int main() {
 
     Nodo *arbol = nullptr;
 
-    processMulOperations(inputFile, arbol);
+    operacionMul(inputFile, arbol);
 
     int sumaTotal = sumarNodos(arbol);
     cout << "Suma total: " << sumaTotal << endl;
