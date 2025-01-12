@@ -11,3 +11,7 @@ Se ha iniciado una tabla hash con unordered_set (página 18 de los apuntes), y h
 Hemos utilizado la tabla hash para asegurar que cada antinodo se guarda una sola vez, y además la búsqueda e inserción será rápida.
 
 Por último, en el main hemos cargado el archivo, y hemos llamado a la función encontrarAntinodos. También hemos eliminado el espacio en memoria reservado para la cuadrilla, como buena praxis.
+
+Este código nos ha enseñado a usar muchas funciones que desconocíamos. En primer lugar, encontramos la librería <unordered_set> en los apuntes de la asignatura, la cual aprendimos a usar y nos resultó muuy útil a la hora de almacenar las ubicaciones únicas de antinodos, ya que esta librería elimina automáticamente los duplicados. También investigamos y aprendimos otras funciones como isalnum() y a manejar tablas hash y cubetas en general.
+
+Pero, tuvimos algunos problemas al implementar funciones como bool sonColineales, ya que nos costó llegar a la fórmula correcta. Además, en un principio no pensamos en usar unordered_set y optamos por almacenar las ubicaciones de los antinodos en un array, lo cual era mucho más costoso y menos eficiente, ya que hubieramos tenido que verificar manualmente si una ubicación ya estaba presente en la lista, especialmente con un número de antinodos tan grande como los del input.
