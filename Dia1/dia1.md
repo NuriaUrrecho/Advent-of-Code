@@ -8,3 +8,7 @@ Posteriormente, se declaran los arreglos de enteros de tamaño tamano y se carga
 Tras esto, se cierra el archivo una vez que los datos han sido cargados en los arreglos y se realiza el algoritmo insertionSort sobre dichos arreglos.
 
 Una vez ordenados los arreglos se realiza el cálculo final, es decir, la suma de las diferencias absolutas entre las dos listas. Para ello, se recorre todo el tamaño de los arreglos y se calcula la diferencia teniendo en cuenta cual de los dos elementos es mayor para obtener siempre un número > 0. Cada diferencia se añadirá a la suma total de diferencias, que será el resultado final.
+
+Tras realizar el código, hemos notado que hemos aprendido y reforzado todo lo referente a la gestión de archivos (cómo leer datos de un archivo txt usando ifstream) y, sobre todo, a utilizar algoritmos de ordenamiento (como el insertionSort que hemos realizado).
+
+Sin embargo, también encontramos algunas dificultades durante la realización del programa, especialmente para dividir las líneas de código en dos arreglos. En un principio pensamos en simplemente dividir cada linea por la mitad, pero tras investigar e informarnos encontramos la función c_str(), que conseguía lo mismo de una forma más sencilla y eficiente.
