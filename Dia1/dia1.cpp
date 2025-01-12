@@ -1,11 +1,3 @@
-/*
-ADVENT OF CODE (DÍA 1 REWORK)
-Suma de la diferencia numérica entre dos listas sin usar funciones adicionales para cargar datos
-______________________________________________________________________
-
-MIEMBROS: Nuria Urrecho Torres, Iván Rejas Cuevas y Rubén Pérez Gracia
-*/
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -34,6 +26,7 @@ int main() {
 
     int tamano = 0;
 
+    // Determinar el nº de líneas del archivo
     while (getline(archivo, linea)) {
         tamano++;
     }
@@ -41,12 +34,16 @@ int main() {
     archivo.close();
     archivo.open("input.txt");
 
+    // Arreglos dinámicos para almacenar los datos
     int* arreglo1 = new int[tamano];
     int* arreglo2 = new int[tamano];
 
     int indice = 0;
+
+    // Dividir los datos en dos arreglos
     while (getline(archivo, linea)) {
         int valor1, valor2;
+        // Extraer dos valores de cada línea
         sscanf(linea.c_str(), "%d %d", &valor1, &valor2);
         arreglo1[indice] = valor1;
         arreglo2[indice] = valor2;
@@ -55,10 +52,13 @@ int main() {
 
     archivo.close();
 
+    // Ordenar cada arreglo
     insertionSort(arreglo1, tamano);
     insertionSort(arreglo2, tamano);
 
     int suma = 0;
+
+    // Calcula diferencia entre los elementos de los dos arreglos
     for (int i = 0; i < tamano; i++) {
         int diferencia;
         if (arreglo1[i] > arreglo2[i]) {
@@ -66,7 +66,7 @@ int main() {
         } else {
             diferencia = arreglo2[i] - arreglo1[i];
         }
-        suma += diferencia;
+        suma += diferencia; // acumular la suma
     }
 
     cout << suma << endl;
